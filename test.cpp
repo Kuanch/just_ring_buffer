@@ -77,6 +77,35 @@ void test_overwrite_oldest() {
     std::cout << "PASS" << std::endl;
 }
 
+void test_heavy_interleaved() {
+    std::cout << "[Test] Heavy Interleaved Push/Pop" << std::endl;
+    ring_buffer rb(5);
+    int produced = 0;
+    int consumed = 0;
+    
+    // Push 3
+    for(int i=0; i<3; i++) rb.push(produced++); // 0, 1, 2 in buffer
+    rb.print();
+    
+    // Pop 2
+    assert_eq(rb.pop(), consumed++, "Interleaved 1"); // Pop 0
+    assert_eq(rb.pop(), consumed++, "Interleaved 2"); // Pop 1
+    rb.print();
+    
+    // Buffer has [2]
+    
+    // Push 4 (wrap around likely)
+    for(int i=0; i<4; i++) rb.push(produced++); // 2, | 3, 4, 5, 6
+    rb.print();
+    
+    // Buffer should be full? Size 5. Items: 2, 3, 4, 5, 6 (5 items).
+    
+    // Pop all
+    while(consumed < produced) {
+        assert_eq(rb.pop(), consumed++, "Interleaved Pop Remaining");
+    }
+    std::cout << "PASS" << std::endl;
+}
 
 void test_from_user_request() {
     std::cout << "[Test] User's Overstack Case (Size 3, Push 7)" << std::endl;
@@ -97,6 +126,7 @@ int main() {
         test_basic_push_pop();
         test_wrap_around_exact();
         test_overwrite_oldest();
+        test_heavy_interleaved();
         test_from_user_request();
         std::cout << "ALL TESTS PASSED" << std::endl;
     } catch (const std::exception& e) {
