@@ -8,6 +8,11 @@ public:
     ring_buffer(size_t size);
     ~ring_buffer();
 
+    bool rb_lock;
+
+    void lock() { rb_lock = true; }
+    void unlock() { rb_lock = false; }
+
     void push(int value);
     int pop();
     void print();

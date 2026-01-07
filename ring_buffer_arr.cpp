@@ -13,7 +13,8 @@ ring_buffer::~ring_buffer() {
 }
 
 void ring_buffer::push(int value) {
-    std::cout << "pushing " << value << " to " << tail << std::endl;
+    while (rb_lock) {}
+    rb_lock = true;
     if (tail > size - 1) {
         buf[0] = value;
         tail = 1;
@@ -26,14 +27,18 @@ void ring_buffer::push(int value) {
         buf[tail] = value;
         tail++;
     }
+    rb_lock = false;
 }
 
 int ring_buffer::pop() {
+    while (rb_lock) {}
+    rb_lock = true;
     int result = buf[head];
     head++;
     if (head > size - 1) {
         head = 0;
     }
+    rb_lock = false;
     return result;
 }
 
@@ -42,5 +47,4 @@ void ring_buffer::print() {
         std::cout << buf[i] << " ";
     }
     std::cout << "head: " << head << " tail: " << tail << std::endl;
-    std::cout << std::endl;
 }
