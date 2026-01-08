@@ -26,7 +26,6 @@ void producer(ring_buffer& rb, int id, int num_items) {
         push_count++;
         std::this_thread::yield(); // Allow other threads to run
     }
-    std::cout << "Producer " << id << " done." << std::endl;
 }
 
 void consumer(ring_buffer& rb, int id, int num_items) {
@@ -36,7 +35,6 @@ void consumer(ring_buffer& rb, int id, int num_items) {
         (void)val; // Suppress unused warning
         std::this_thread::yield();
     }
-    std::cout << "Consumer " << id << " done." << std::endl;
 }
 
 void test_single_producer_single_consumer() {
@@ -146,9 +144,9 @@ void test_stress() {
 
     std::cout << "Pushed: " << push_count << ", Popped: " << pop_count << std::endl;
     if (push_count == pop_count) {
-        std::cout << "PASS: push_count == pop_count" << std::endl;
+        std::cout << "  " << PASS << ": push_count == pop_count" << std::endl;
     } else {
-        std::cout << "FAIL: push_count != pop_count (data race?)" << std::endl;
+        std::cout << "  " << FAIL << ": push_count != pop_count (data race?)" << std::endl;
     }
 }
 
@@ -222,9 +220,9 @@ void test_data_race_value_integrity() {
     
     std::cout << "  Corrupted values detected: " << values_corrupted << std::endl;
     if (race_detected) {
-        std::cout << "  FAIL: Data corruption detected (possible data race)" << std::endl;
+        std::cout << "  " << FAIL << ": Data corruption detected (possible data race)" << std::endl;
     } else {
-        std::cout << "  PASS: No corruption detected" << std::endl;
+        std::cout << "  " << PASS << ": No corruption detected" << std::endl;
     }
 }
 
@@ -269,9 +267,9 @@ void test_data_race_concurrent_push() {
     std::cout << "  Successful pushes recorded: " << successful_pushes << std::endl;
     
     if (successful_pushes == NUM_THREADS * ITERATIONS) {
-        std::cout << "  PASS: All pushes recorded" << std::endl;
+        std::cout << "  " << PASS << ": All pushes recorded" << std::endl;
     } else {
-        std::cout << "  FAIL: Lost " << (NUM_THREADS * ITERATIONS - successful_pushes) << " pushes (race condition)" << std::endl;
+        std::cout << "  " << FAIL << ": Lost " << (NUM_THREADS * ITERATIONS - successful_pushes) << " pushes (race condition)" << std::endl;
     }
 }
 
@@ -323,9 +321,9 @@ void test_data_race_concurrent_pop() {
     std::cout << "  Sum of popped values: " << sum << " (expected: " << expected_sum << ")" << std::endl;
     
     if (sum == expected_sum) {
-        std::cout << "  PASS: Sum matches - no duplicate/lost pops" << std::endl;
+        std::cout << "  " << PASS << ": Sum matches - no duplicate/lost pops" << std::endl;
     } else {
-        std::cout << "  FAIL: Sum mismatch - possible duplicate or lost pops (data race)" << std::endl;
+        std::cout << "  " << FAIL << ": Sum mismatch - possible duplicate or lost pops (data race)" << std::endl;
     }
 }
 
@@ -368,7 +366,7 @@ void test_data_race_rapid_alternating() {
     std::cout << "  Pushes completed: " << push_done << std::endl;
     std::cout << "  Pops completed: " << pop_done << std::endl;
     std::cout << "  (If program reaches here without crash/hang, basic stability is OK)" << std::endl;
-    std::cout << "  PASS: No deadlock or crash" << std::endl;
+    std::cout << "  " << PASS << ": No deadlock or crash" << std::endl;
 }
 
 int main() {
